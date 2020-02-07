@@ -1,0 +1,76 @@
+.container{
+   background-color: white;
+    height: 500px;
+}
+
+
+body{
+    font-family: sans serif;
+    padding: 10px;
+    background-color: olivedrab;
+}
+
+h1{
+    text-align: center;
+}
+
+#center 
+    {
+        height: 700px;
+        overflow: hidden;
+        float: left;
+    }
+    #slides 
+    {
+        left: 0;
+        position: relative;
+        width: 1000%;
+    }
+    @media only screen and (min-width: 100px) 
+    {
+        .col-1 
+        {
+            width: 10.33%;
+        }
+        
+        .col-10
+        {
+            width: 70.33%;
+        }
+    }
+    .slot 
+    {
+        margin: 15px 0px;
+        width: 10%;
+        float: left;
+        display: inline-block;
+    }
+    .slot img 
+    {
+        padding: 15px 40%;
+        width: 25%;
+    }
+    .main 
+    {
+        width: 100%;
+    }
+
+    #left 
+    {
+        text-align: left;
+    }
+    #right
+    {
+        text-align: right;
+    }
+    #left_button,
+    #right_button 
+    {
+        cursor: pointer;
+        padding-top: 100px;
+    }
+    [class*="col-"] 
+    {
+        float: left;
+        padding: 0px;
+    }
