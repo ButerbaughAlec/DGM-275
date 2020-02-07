@@ -1,1 +1,264 @@
+import tkinter
+import tkinter.messagebox
+import pickle
 
+
+class CrudGUI:
+    def __init__(self, master):
+        self.master = master
+        self.master.title('Store Item Manager')
+
+        self.top_frame = tkinter.Frame(self.master)
+        self.middle_frame = tkinter.Frame(self.master)
+        self.bottom_frame = tkinter.Frame(self.master)
+
+        self.radio_var = tkinter.IntVar()
+        self.radio_var.set(0)
+
+        self.look = tkinter.Radiobutton(self.top_frame, text='Search Item',
+                                        variable=self.radio_var, value=1)
+        self.add = tkinter.Radiobutton(self.top_frame, text='Add Item',
+                                       variable=self.radio_var, value=2)
+        self.change = tkinter.Radiobutton(self.top_frame, text='Update Item',
+                                          variable=self.radio_var, value=3)
+        self.other = tkinter.Radiobutton(self.top_frame, text='Item List', variable=self.radio_var, value=4)
+
+        self.look.pack(anchor='w', padx=20)
+        self.add.pack(anchor='w', padx=20)
+        self.change.pack(anchor='w', padx=20)
+        self.other.pack(anchor='w', padx=20)
+
+        self.ok_button = tkinter.Button(self.bottom_frame, text='OK', command=self.open_menu)
+        self.quit_button = tkinter.Button(self.bottom_frame, text='QUIT', command=self.master.destroy)
+        self.ok_button.pack(side='left')
+        self.quit_button.pack(side='left')
+
+        self.top_frame.pack()
+        self.bottom_frame.pack()
+
+    def open_menu(self):
+        if self.radio_var.get() == 1:
+            LookGUI(self.master)
+        elif self.radio_var.get() == 2:
+            AddGUI(self.master)
+        elif self.radio_var.get() == 3:
+            ChangeGUI(self.master)
+        elif self.radio_var.get() == 4:
+            OtherGUI(self.master)
+        else:
+            print("Please select an option")
+
+
+class LookGUI:
+    def __init__(self, master):
+
+        try:
+            input_file = open("store.dat", 'rb')
+            self.store = pickle.load(input_file)
+            input_file.close()
+        except (FileNotFoundError, IOError):
+            self.store = {}
+
+        self.look = tkinter.Toplevel(master)
+        self.look.title('Search for item')
+
+        self.top_frame = tkinter.Frame(self.look)
+        self.middle_frame = tkinter.Frame(self.look)
+        self.bottom_frame = tkinter.Frame(self.look)
+
+        self.search_label = tkinter.Label(self.top_frame, text='Enter the item you are looking for: ')
+        self.search_entry = tkinter.Entry(self.top_frame, width=15)
+
+        self.search_label.pack(side='left')
+        self.search_entry.pack(side='left')
+
+        self.value = tkinter.StringVar()
+        self.info = tkinter.Label(self.middle_frame, text='Price & Stock Number: ')
+        self.result_label = tkinter.Label(self.middle_frame, textvariable=self.value)
+
+        self.info.pack(side='left')
+        self.result_label.pack(side='left')
+
+        self.search_button = tkinter.Button(self.bottom_frame, text='Search', command=self.search)
+        self.back_button = tkinter.Button(self.bottom_frame, text='Main Menu', command=self.back)
+
+        self.search_button.pack(side='left')
+        self.back_button.pack(side='left')
+
+        self.top_frame.pack()
+        self.middle_frame.pack()
+        self.bottom_frame.pack()
+
+    def search(self):
+        name = self.search_entry.get()
+        result = self.store.get(name, 'Not Found')
+        self.value.set(result)
+
+    def back(self):
+        self.look.destroy()
+
+
+class AddGUI:
+    def __init__(self, master):
+
+        try:
+            input_file = open("store.dat", 'rb')
+            self.store = pickle.load(input_file)
+            input_file.close()
+        except (FileNotFoundError, IOError):
+            self.store = {}
+
+        self.look = tkinter.Toplevel(master)
+        self.look.title('Add item')
+
+        self.top_frame = tkinter.Frame(self.look)
+        self.middle_frame = tkinter.Frame(self.look)
+        self.bottom_frame = tkinter.Frame(self.look)
+
+        self.add_label = tkinter.Label(self.top_frame, text='Enter item to add: ')
+        self.add_entry = tkinter.Entry(self.top_frame, width=15)
+        self.add2_label = tkinter.Label(self.middle_frame, text='Enter item price: ')
+        self.add2_entry = tkinter.Entry(self.middle_frame, width=15)
+        self.add3_label = tkinter.Label(self.bottom_frame, text='Enter item stock number (quantity): ')
+        self.add3_entry = tkinter.Entry(self.bottom_frame, width=15)
+
+        self.add_label.pack(side='left')
+        self.add_entry.pack(side='left')
+        self.add2_label.pack(side='left')
+        self.add2_entry.pack(side='left')
+        self.add3_label.pack(side='left')
+        self.add3_entry.pack(side='left')
+
+        self.value = tkinter.StringVar()
+        self.info = tkinter.Label(self.middle_frame)
+        self.result_label = tkinter.Label(self.middle_frame, textvariable=self.value)
+
+        self.info.pack(side='left')
+        self.result_label.pack(side='left')
+
+        self.add_button = tkinter.Button(self.bottom_frame, text='Add', command=self.add)
+        self.back_button = tkinter.Button(self.bottom_frame, text='Main Menu', command=self.back)
+
+        self.add_button.pack(side='left')
+        self.back_button.pack(side='left')
+
+        self.top_frame.pack()
+        self.middle_frame.pack()
+        self.bottom_frame.pack()
+
+    def add(self):
+        name = self.add_entry.get()
+        price = self.add2_entry.get()
+        stock = self.add3_entry.get()
+        if name not in self.store:
+            self.store[name] = price, stock
+            save_file = open("store.dat", 'wb')
+            pickle.dump(self.store, save_file)
+            save_file.close()
+            tkinter.messagebox.showinfo("Item added", "Information has been successfully added")
+        else:
+            tkinter.messagebox.showinfo("Error", "An error has occurred")
+
+    def back(self):
+        self.look.destroy()
+
+
+class ChangeGUI:
+    def __init__(self, master):
+
+        try:
+            input_file = open("store.dat", 'rb')
+            self.store = pickle.load(input_file)
+            input_file.close()
+        except (FileNotFoundError, IOError):
+            self.store = {}
+
+        self.look = tkinter.Toplevel(master)
+        self.look.title('Update item info')
+
+        self.top_frame = tkinter.Frame(self.look)
+        self.middle_frame = tkinter.Frame(self.look)
+        self.bottom_frame = tkinter.Frame(self.look)
+
+        self.change_label = tkinter.Label(self.top_frame, text='Enter item to update: ')
+        self.change_entry = tkinter.Entry(self.top_frame, width=15)
+        self.change2_label = tkinter.Label(self.middle_frame, text='Enter new price: ')
+        self.change2_entry = tkinter.Entry(self.middle_frame, width=15)
+        self.change3_label = tkinter.Label(self.bottom_frame, text='Enter new stock number: ')
+        self.change3_entry = tkinter.Entry(self.bottom_frame, width=15)
+
+        self.change_label.pack(side='left')
+        self.change_entry.pack(side='left')
+        self.change2_label.pack(side='left')
+        self.change2_entry.pack(side='left')
+        self.change3_label.pack(side='left')
+        self.change3_entry.pack(side='left')
+
+        self.value = tkinter.StringVar()
+        self.info = tkinter.Label(self.middle_frame)
+        self.result_label = tkinter.Label(self.middle_frame, textvariable=self.value)
+
+        self.info.pack(side='left')
+        self.result_label.pack(side='left')
+
+        self.change_button = tkinter.Button(self.bottom_frame, text='Update', command=self.change)
+        self.back_button = tkinter.Button(self.bottom_frame, text='Main Menu', command=self.back)
+
+        self.change_button.pack(side='left')
+        self.back_button.pack(side='left')
+
+        self.top_frame.pack()
+        self.middle_frame.pack()
+        self.bottom_frame.pack()
+
+    def change(self):
+        name = self.change_entry.get()
+        price = self.change2_entry.get()
+        stock = self.change3_entry.get()
+        if name in self.store:
+            self.store[name] = price, stock
+            save_file = open("store.dat", 'wb')
+            pickle.dump(self.store, save_file)
+            save_file.close()
+            tkinter.messagebox.showinfo("Item updates", "Information has been successfully updated")
+
+        else:
+            tkinter.messagebox.showinfo("Error", "An error has occurred")
+
+    def back(self):
+        self.look.destroy()
+
+
+class OtherGUI:
+    def __init__(self, master):
+
+        try:
+            input_file = open("store.dat", 'rb')
+            self.store = pickle.load(input_file)
+            input_file.close()
+        except (FileNotFoundError, IOError):
+            self.store = {}
+
+        self.look = tkinter.Toplevel(master)
+        self.look.title('Item List')
+
+        items = self.store
+        for item in items:
+            if item != "":
+                tkinter.messagebox.showinfo("Item list", items)
+            else:
+                tkinter.messagebox.showinfo("Item list", "No items found.")
+
+    def back(self):
+        self.look.destroy()
+
+
+def main():
+    root = tkinter.Tk()
+    root.geometry("300x130")
+    root.configure(background='lightgray')
+    CrudGUI(root)
+    root.mainloop()
+
+
+main()
